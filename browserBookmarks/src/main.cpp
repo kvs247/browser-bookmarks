@@ -10,8 +10,6 @@ int main()
 {
   const auto parsedJson = Brave::parseBookmarks();
 
-  std::cout << "parsedJson:\n" << parsedJson.dump(2) << "\n\n";
-
   HtmlFormatter htmlFormatter(parsedJson);
   const auto html = htmlFormatter.getHtml();
 

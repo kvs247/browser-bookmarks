@@ -19,6 +19,11 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/common
+)
+
 target_link_libraries(${PROJECT_NAME}
     nlohmann_json::nlohmann_json
 )

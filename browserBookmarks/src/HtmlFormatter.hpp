@@ -1,13 +1,14 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include <sstream>
+#include <types.hpp>
 
 using json = nlohmann::json;
 
 class HtmlFormatter
 {
 public:
-  HtmlFormatter(json j) : parsedJson(j) {} 
+  HtmlFormatter(BookmarkBar bb) : bookmarkBar(bb) {}
 
   std::string getHtml()
   {
@@ -18,7 +19,7 @@ public:
   }
 
 private:
-  const json parsedJson;
+  const BookmarkBar bookmarkBar;
   std::stringstream ss;
 
   void addHeading()
@@ -32,16 +33,19 @@ private:
   void addBookmarks()
   {
     ss << "<DL><p>\n";
-    for (const auto &it : parsedJson["bookmarks"])
+    for (const auto &it : bookmarkBar.items)
     {
-      const auto x = it["text"];
-      ss << "\t\t<DT>";
-      ss << "<A ";
-      ss << "HREF=" << it["href"] << " ";
-      ss << "ADD_DATE=\"" << it["add_date"] << "\"";
-      ss << ">";
-      ss << it["text"].get<std::string>();
-      ss << "</A>\n";
+      if (std::holds_alternative<Bookmark>(it))
+      {
+        const auto bookmark = std::get<Bookmark>(it);
+        ss << "\t<DT>";
+        ss << "<A ";
+        ss << "HREF=" << bookmark.name << " ";
+        ss << "ADD_DATE=\"" << bookmark.addDate << "\"";
+        ss << ">";
+        ss << bookmark.name;
+        ss << "</A>\n";
+      }
     }
     ss << "</DL><p>\n";
   }

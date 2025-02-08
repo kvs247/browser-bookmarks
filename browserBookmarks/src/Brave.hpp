@@ -1,13 +1,14 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <fstream>
+#include <types.hpp>
 
 using json = nlohmann::json;
 
 class Brave
 {
 public:
-  static json parseBookmarks(const std::string &path)
+  static BookmarkBar parseBookmarks(const std::string &path)
   {
     std::ifstream f(path);
     if (!f.is_open())
@@ -17,26 +18,24 @@ public:
 
     json fileJson = json::parse(f);
 
-    json parsedJson;
-    parsedJson["add_date"] = timestampFromJson(fileJson["roots"]["bookmark_bar"]["date_added"]);
-    parsedJson["last_modified"] = timestampFromJson(fileJson["roots"]["bookmark_bar"]["date_modified"]);
-    parsedJson["bookmarks"] = json::array();
+    BookmarkBar parsedJson;
+    parsedJson.addDate = timestampFromJson(fileJson["roots"]["bookmark_bar"]["date_added"]);
+    parsedJson.lastModified = timestampFromJson(fileJson["roots"]["bookmark_bar"]["date_modified"]);
 
     auto bookmarkItems = fileJson["roots"]["bookmark_bar"]["children"];
     for (auto item : bookmarkItems)
     {
-      json jsonBookmark;
-      jsonBookmark["href"] = item["url"];
-      jsonBookmark["add_date"] = timestampFromJson(item["date_added"]);
-      jsonBookmark["text"] = item["name"];
 
-      parsedJson["bookmarks"].push_back(jsonBookmark);
+      const auto name = item["name"];
+      const auto url = item["url"];
+      const auto addDate = timestampFromJson(item["date_added"]);
+      parsedJson.items.push_back(Bookmark{name, url, addDate});
     }
 
     return parsedJson;
   }
 
-  static json parseBookmarks()
+  static BookmarkBar parseBookmarks()
   {
     return parseBookmarks(getDefaultPath());
   }
