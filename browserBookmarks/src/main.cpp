@@ -1,8 +1,7 @@
 #include <iostream>
 #include "Brave.hpp"
 #include "HtmlFormatter.hpp"
-
-#include <fstream>
+#include "writeOutput.hpp"
 
 using json = nlohmann::json;
 
@@ -13,9 +12,5 @@ int main()
   HtmlFormatter htmlFormatter(parsedJson);
   const auto html = htmlFormatter.getHtml();
 
-  std::cout << "html:\n" << html << "\n\n";
-
-  const std::string path = "bookmarks.html";
-  std::ofstream f(path);
-  f.write(html.c_str(), html.length());
+  writeOutput(html);
 }
