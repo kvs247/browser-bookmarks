@@ -23,14 +23,7 @@ public:
     parsedJson.lastModified = timestampFromJson(fileJson["roots"]["bookmark_bar"]["date_modified"]);
 
     auto bookmarkItems = fileJson["roots"]["bookmark_bar"]["children"];
-    for (auto item : bookmarkItems)
-    {
-
-      const auto name = item["name"];
-      const auto url = item["url"];
-      const auto addDate = timestampFromJson(item["date_added"]);
-      parsedJson.items.push_back(Bookmark{name, url, addDate});
-    }
+    parsedJson.items = addBookmarkItems(bookmarkItems);
 
     return parsedJson;
   }
@@ -41,6 +34,27 @@ public:
   }
 
 private:
+  static std::vector<BookmarkItem> addBookmarkItems(json data)
+  {
+    std::vector<BookmarkItem> res;
+    for (auto item : data)
+    {
+      const bool isFolder = item.contains("children");
+      if (isFolder)
+      {
+        res.push_back(BookmarkFolder{item["name"], addBookmarkItems(item["children"])});
+      }
+      else
+      {
+        const auto name = item["name"];
+        const auto url = item["url"];
+        const auto addDate = timestampFromJson(item["date_added"]);
+        res.push_back(Bookmark{name, url, addDate});
+      }
+    }
+    return res;
+  }
+
   static std::string getDefaultPath()
   {
     const auto home = std::getenv("HOME");

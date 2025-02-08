@@ -1,6 +1,21 @@
 {
   "files.associations": {
     "stdexcept": "cpp",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "array": "cpp",
+    "cwchar": "cpp",
+    "forward_list": "cpp",
+    "unordered_map": "cpp",
+    "vector": "cpp",
+    "exception": "cpp",
+    "fstream": "cpp",
+    "functional": "cpp",
+    "initializer_list": "cpp",
+    "istream": "cpp",
+    "new": "cpp",
+    "ostream": "cpp",
+    "streambuf": "cpp",
+    "tuple": "cpp",
+    "valarray": "cpp"
   }
 }
