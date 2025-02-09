@@ -1,6 +1,6 @@
+#include <fstream>
 #include <nlohmann/json.hpp>
 #include <string>
-#include <fstream>
 #include <types.hpp>
 
 using json = nlohmann::json;
@@ -50,10 +50,7 @@ private:
     return res;
   }
 
-  static long timestampFromJson(json j)
-  {
-    return windowsFiletimeToEpoch(std::stol(j.get<std::string>()));
-  }
+  static long timestampFromJson(json j) { return windowsFiletimeToEpoch(std::stol(j.get<std::string>())); }
 
   static long windowsFiletimeToEpoch(long wft)
   {

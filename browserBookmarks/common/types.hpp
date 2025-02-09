@@ -1,32 +1,36 @@
 #pragma once
 
-#include <vector>
+#include <iostream>
 #include <string>
 #include <variant>
-#include <iostream>
+#include <vector>
 
 struct Bookmark;
 struct BookmarkFolder;
 
 using BookmarkItem = std::variant<Bookmark, BookmarkFolder>;
 
-struct Bookmark {
+struct Bookmark
+{
   std::string name;
   std::string url;
   long addDate;
 };
 
-struct BookmarkFolder {
+struct BookmarkFolder
+{
   std::string name;
   std::vector<BookmarkItem> items;
 };
 
-struct BookmarkBar {
+struct BookmarkBar
+{
   long addDate;
   long lastModified;
   std::vector<BookmarkItem> items;
 
-  void print() const {
+  void print() const
+  {
     std::cout << "BookmarkBar:\n";
     for (const auto &x : items)
     {
