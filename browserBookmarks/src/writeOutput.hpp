@@ -6,8 +6,6 @@
 #include <chrono>
 #include <sstream>
 
-#include <iostream>
-
 void writeOutput(const std::string &output)
 {
   const auto now = std::chrono::system_clock::now();
@@ -33,7 +31,6 @@ void writeOutput(const std::string &output)
      << ".html";
 
   const std::string filepath = BOOKMARKS_DIR + ss.str();
-  std::cout << filepath << "\n";
   std::ofstream f(filepath);
   f.write(output.c_str(), output.length());
 }

@@ -5,7 +5,7 @@
 
 using json = nlohmann::json;
 
-class Brave
+class ChromiumParser
 {
 public:
   static BookmarkBar parseBookmarks(const std::string &path)
@@ -28,11 +28,6 @@ public:
     return parsedJson;
   }
 
-  static BookmarkBar parseBookmarks()
-  {
-    return parseBookmarks(getDefaultPath());
-  }
-
 private:
   static std::vector<BookmarkItem> addBookmarkItems(json data)
   {
@@ -53,12 +48,6 @@ private:
       }
     }
     return res;
-  }
-
-  static std::string getDefaultPath()
-  {
-    const auto home = std::getenv("HOME");
-    return std::string(home) + "/.config/BraveSoftware/Brave-Browser/Default/Bookmarks";
   }
 
   static long timestampFromJson(json j)
