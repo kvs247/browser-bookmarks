@@ -4,15 +4,8 @@ project(browserBookmarks)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wall -Wextra)
 
-include(FetchContent)
-
-FetchContent_Declare(
-    json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.11.3
-)
-
-FetchContent_MakeAvailable(json)
+find_package(nlohmann_json REQUIRED)
+find_package(CURL REQUIRED)
 
 get_filename_component(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 set(BOOKMARKS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/")
@@ -30,11 +23,14 @@ set(SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
+    PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/common
     ${CMAKE_BINARY_DIR}/generated
+    ${CURL_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}
+    PRIVATE
     nlohmann_json::nlohmann_json
+    ${CURL_LIBRARIES}
 )
