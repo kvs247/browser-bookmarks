@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wall -Wextra)
 
 find_package(nlohmann_json REQUIRED)
-find_package(CURL REQUIRED)
+find_package(AWSSDK REQUIRED COMPONENTS s3)
 
 get_filename_component(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 set(BOOKMARKS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/")
@@ -32,5 +32,5 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     nlohmann_json::nlohmann_json
-    ${CURL_LIBRARIES}
+    ${AWSSDK_LIBRARIES}
 )
