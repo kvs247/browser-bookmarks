@@ -23,7 +23,7 @@ struct BookmarkFolder
   std::vector<BookmarkItem> items;
 };
 
-struct BookmarkBar
+struct BookmarkData
 {
   long addDate;
   long lastModified;

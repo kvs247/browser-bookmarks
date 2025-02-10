@@ -2,10 +2,9 @@
 #include <string>
 
 #include "ChromiumParser.hpp"
-#include "HtmlFormatter.hpp"
+#include "Formatter.hpp"
 #include "awsS3.hpp"
 #include "paths.h"
-#include "writeOutput.hpp"
 
 using json = nlohmann::json;
 
@@ -30,12 +29,12 @@ int main(int argc, char *argv[])
 
   const auto parsedJson = ChromiumParser::parseBookmarks(bookmarksPath);
 
-  HtmlFormatter htmlFormatter(parsedJson);
-  const auto html = htmlFormatter.getHtml();
+  Formatter formatter(parsedJson);
+  const auto html = formatter.getHtml();
 
   const std::string bucketName = "kvs-bookmarks";
   const std::string region = "us-east-2";
-  const std::string fileName = getFileName();
+  const std::string fileName = Formatter::getFileName();
 
   s3PutObject(bucketName, fileName, html, region);
 }

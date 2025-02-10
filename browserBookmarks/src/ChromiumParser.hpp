@@ -8,7 +8,7 @@ using json = nlohmann::json;
 class ChromiumParser
 {
 public:
-  static BookmarkBar parseBookmarks(const std::string &path)
+  static BookmarkData parseBookmarks(const std::string &path)
   {
     std::ifstream f(path);
     if (!f.is_open())
@@ -18,7 +18,7 @@ public:
 
     json fileJson = json::parse(f);
 
-    BookmarkBar parsedJson;
+    BookmarkData parsedJson;
     parsedJson.addDate = timestampFromJson(fileJson["roots"]["bookmark_bar"]["date_added"]);
     parsedJson.lastModified = timestampFromJson(fileJson["roots"]["bookmark_bar"]["date_modified"]);
 

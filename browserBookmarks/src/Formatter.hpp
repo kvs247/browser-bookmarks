@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
@@ -5,10 +6,10 @@
 
 using json = nlohmann::json;
 
-class HtmlFormatter
+class Formatter
 {
 public:
-  HtmlFormatter(BookmarkBar bb) : bookmarkBar(bb) {}
+  Formatter(BookmarkData bd) : bookmarkData(bd) {}
 
   std::string getHtml()
   {
@@ -18,8 +19,10 @@ public:
     return ss.str();
   }
 
+  static std::string getFileName() { return "bookmarks_" + getDateTimeString() + ".html"; }
+
 private:
-  const BookmarkBar bookmarkBar;
+  const BookmarkData bookmarkData;
   std::stringstream ss;
   int currentIndent = 0;
 
@@ -36,7 +39,7 @@ private:
     ss << "<DL><p>\n";
 
     currentIndent = 1;
-    addBookmarks(bookmarkBar.items);
+    addBookmarks(bookmarkData.items);
 
     ss << "</DL><p>\n";
   }
@@ -77,5 +80,26 @@ private:
     ss << ">";
     ss << bookmark.name;
     ss << "</A>\n";
+  }
+
+  static std::string getDateTimeString()
+  {
+    const auto now = std::chrono::system_clock::now();
+    std::time_t timeNow = std::chrono::system_clock::to_time_t(now);
+    std::tm *timeInfo = std::gmtime(&timeNow);
+
+    const int year = timeInfo->tm_year + 1900;
+    const int month = timeInfo->tm_mon + 1;
+    const int day = timeInfo->tm_mday;
+    const int hour = timeInfo->tm_hour;
+    const int minute = timeInfo->tm_min;
+    const int second = timeInfo->tm_sec;
+
+    std::stringstream ss;
+    ss << std::to_string(year) << std::setfill('0') << std::setw(2) << month << std::setfill('0') << std::setw(2) << day
+       << "_" << std::setfill('0') << std::setw(2) << hour << std::setfill('0') << std::setw(2) << minute
+       << std::setfill('0') << std::setw(2) << second;
+
+    return ss.str();
   }
 };
