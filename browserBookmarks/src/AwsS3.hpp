@@ -18,7 +18,7 @@ public:
     client = Aws::S3::S3Client(clientConfig);
   }
 
-  std::stringstream getObject(const std::string &fileName)
+  std::stringstream getObject(const std::string &fileName) const
   {
     std::stringstream buffer;
 
@@ -41,7 +41,7 @@ public:
     return buffer;
   }
 
-  bool putObject(const std::string &fileName, const std::string &fileContent)
+  bool putObject(const std::string &fileName, const std::string &fileContent) const
   {
     Aws::S3::Model::PutObjectRequest request;
     request.SetBucket(bucketName);
