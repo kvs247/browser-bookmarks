@@ -36,10 +36,19 @@ int main(int argc, char *argv[])
   const std::string region = "us-east-2";
   const std::string fileName = Formatter::getFileName();
 
+  // begin AWS operations
+
+  Aws::SDKOptions options;
+  Aws::InitAPI(options);
+
   AwsS3 s3Bucket(bucketName, region);
 
   s3Bucket.putObject(fileName, html);
   s3Bucket.putObject("current.html", html);
 
   std::cout << s3Bucket.getObject("current.html").str() << "\n";
+
+  Aws::ShutdownAPI(options);
+
+  return 0;
 }

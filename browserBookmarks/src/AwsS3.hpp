@@ -12,78 +12,63 @@
 class AwsS3
 {
 public:
-  AwsS3(const std::string &bn, const std::string &r) : bucketName(bn), region(r) {}
+  AwsS3(const std::string &bn, const std::string &r) : bucketName(bn), region(r)
+  {
+    clientConfig.region = region;
+    client = Aws::S3::S3Client(clientConfig);
+  }
 
   std::stringstream getObject(const std::string &fileName)
   {
     std::stringstream buffer;
 
-    Aws::SDKOptions options;
+    Aws::S3::Model::GetObjectRequest request;
+    request.SetBucket(bucketName);
+    request.SetKey(fileName);
 
-    Aws::InitAPI(options);
+    auto outcome = client.GetObject(request);
+
+    if (outcome.IsSuccess())
     {
-      Aws::Client::ClientConfiguration clientConfig;
-      clientConfig.region = region;
-
-      Aws::S3::S3Client s3Client(clientConfig);
-
-      Aws::S3::Model::GetObjectRequest request;
-      request.SetBucket(bucketName);
-      request.SetKey(fileName);
-
-      auto outcome = s3Client.GetObject(request);
-
-      if (outcome.IsSuccess())
-      {
-        std::cout << "successfully retrieved object from S3\n";
-        buffer << outcome.GetResult().GetBody().rdbuf();
-      }
-      else
-      {
-        std::cout << "error retrieving object from S3: " << outcome.GetError().GetMessage() << std::endl;
-      }
+      buffer << outcome.GetResult().GetBody().rdbuf();
+      std::cout << "successfully retrieved object " << fileName << " from bucket " << bucketName << "\n";
     }
-    Aws::ShutdownAPI(options);
+    else
+    {
+      std::cout << "error retrieving object from S3: " << outcome.GetError().GetMessage() << std::endl;
+    }
 
     return buffer;
   }
 
-  int putObject(const std::string &fileName, const std::string &fileContents)
+  bool putObject(const std::string &fileName, const std::string &fileContent)
   {
-    Aws::SDKOptions options;
+    Aws::S3::Model::PutObjectRequest request;
+    request.SetBucket(bucketName);
+    request.SetKey(fileName);
 
-    Aws::InitAPI(options);
+    std::shared_ptr<Aws::IOStream> inputData = Aws::MakeShared<Aws::StringStream>("PutObjectInputStream");
+    *inputData << fileContent;
+    request.SetBody(inputData);
+
+    auto outcome = client.PutObject(request);
+
+    if (outcome.IsSuccess())
     {
-      Aws::Client::ClientConfiguration clientConfig;
-      clientConfig.region = region;
-
-      Aws::S3::S3Client s3Client(clientConfig);
-
-      Aws::S3::Model::PutObjectRequest request;
-      request.SetBucket(bucketName);
-      request.SetKey(fileName);
-
-      std::shared_ptr<Aws::IOStream> inputData = Aws::MakeShared<Aws::StringStream>("PutObjectInputStream");
-      *inputData << fileContents;
-      request.SetBody(inputData);
-
-      auto outcome = s3Client.PutObject(request);
-
-      if (outcome.IsSuccess())
-      {
-        std::cout << "successfully put object in S3 bucket\n";
-      }
-      else
-      {
-        std::cout << "error putting object in s3 bucket: " << outcome.GetError().GetMessage() << std::endl;
-      }
+      std::cout << "added object " << fileName << " to bucket " << bucketName << "\n";
     }
-    Aws::ShutdownAPI(options);
+    else
+    {
+      std::cerr << "error: putObject: " << outcome.GetError().GetMessage() << std::endl;
+    }
 
-    return 0;
+    return outcome.IsSuccess();
   }
 
 private:
   const std::string bucketName;
   const std::string region;
+  Aws::SDKOptions sdkOptions;
+  Aws::Client::ClientConfiguration clientConfig;
+  Aws::S3::S3Client client;
 };
