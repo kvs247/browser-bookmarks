@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 
+#include "AwsS3.hpp"
 #include "ChromiumParser.hpp"
 #include "Formatter.hpp"
-#include "awsS3.hpp"
 #include "paths.h"
 
 using json = nlohmann::json;
@@ -36,5 +36,10 @@ int main(int argc, char *argv[])
   const std::string region = "us-east-2";
   const std::string fileName = Formatter::getFileName();
 
-  s3PutObject(bucketName, fileName, html, region);
+  AwsS3 s3Bucket(bucketName, region);
+
+  s3Bucket.putObject(fileName, html);
+  s3Bucket.putObject("current.html", html);
+
+  std::cout << s3Bucket.getObject("current.html").str() << "\n";
 }
