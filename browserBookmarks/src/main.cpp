@@ -1,56 +1,34 @@
 #include <iostream>
 #include <string>
 
-#include "AwsS3.hpp"
-#include "ChromiumParser.hpp"
-#include "Formatter.hpp"
-#include "downloader.hpp"
-#include "paths.h"
+#include "Manager.hpp"
 
 using json = nlohmann::json;
 
 int main(int argc, char *argv[])
 {
-  const auto home = std::string(std::getenv("HOME"));
-  std::string bookmarksPath = home + BRAVE_BOOKMARKS_PATH;
+  Manager worker;
 
-  for (int i = 1; i < argc; ++i)
+  const std::string arg = (argc > 1) ? argv[1] : "--help";
+  if (arg == "--help")
   {
-    const std::string arg = argv[i];
+    std::cout << "~~~ Browser Bookmark Utility ~~~\n";
+    std::cout << "Supported Browsers:\n" << "  Brave: --brave\n" << "  Opera: --opera\n";
 
-    if (arg == "--brave")
-    {
-      bookmarksPath = home + BRAVE_BOOKMARKS_PATH;
-    }
-    if (arg == "--opera")
-    {
-      bookmarksPath = home + OPERA_BOOKMARKS_PATH;
-    }
+    return 0;
   }
-
-  const auto parsedJson = ChromiumParser::parseBookmarks(bookmarksPath);
-
-  Formatter formatter(parsedJson);
-  const auto html = formatter.getHtml();
-
-  const std::string bucketName = "kvs-bookmarks";
-  const std::string region = "us-east-2";
-  const std::string fileName = Formatter::getFileName();
-  const std::string currentBookmarksFileName = "current.html";
-
-  // begin AWS operations
-
-  Aws::SDKOptions options;
-  Aws::InitAPI(options);
-
-  const AwsS3 s3Bucket(bucketName, region);
-
-  s3Bucket.putObject(fileName, html);
-  s3Bucket.putObject(currentBookmarksFileName, html);
-
-  downloadCurrentBookmarks(s3Bucket, currentBookmarksFileName, home);
-
-  Aws::ShutdownAPI(options);
+  else if (arg == "--brave")
+  {
+    worker.uploadFromBrave();
+  }
+  else if (arg == "--opera")
+  {
+    worker.uploadFromOpera();
+  }
+  else if (arg == "--download")
+  {
+    worker.downloadCurrentBookmarks();
+  }
 
   return 0;
 }

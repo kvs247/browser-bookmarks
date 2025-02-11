@@ -1,6 +1,5 @@
 #pragma once
 
-#include <aws/core/Aws.h>
 #include <aws/s3/S3Client.h>
 #include <aws/s3/model/GetObjectRequest.h>
 #include <aws/s3/model/ListObjectsV2Request.h>
@@ -68,7 +67,6 @@ public:
 private:
   const std::string bucketName;
   const std::string region;
-  Aws::SDKOptions sdkOptions;
   Aws::Client::ClientConfiguration clientConfig;
   Aws::S3::S3Client client;
 };
