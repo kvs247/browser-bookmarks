@@ -6,6 +6,7 @@ add_compile_options(-Wall -Wextra)
 
 find_package(nlohmann_json REQUIRED)
 find_package(AWSSDK REQUIRED COMPONENTS s3)
+find_package(SQLite3 REQUIRED)
 
 get_filename_component(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 set(BRAVE_BOOKMARKS_PATH "/.config/BraveSoftware/Brave-Browser/Default/Bookmarks")
@@ -32,4 +33,5 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
     nlohmann_json::nlohmann_json
     ${AWSSDK_LIBRARIES}
+    SQLite::SQLite3
 )

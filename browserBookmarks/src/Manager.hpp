@@ -2,6 +2,7 @@
 
 #include "AwsS3.hpp"
 #include "ChromiumParser.hpp"
+#include "FirefoxParser.hpp"
 #include "Formatter.hpp"
 #include "paths.h"
 #include <aws/core/Aws.h>
@@ -37,6 +38,12 @@ public:
 
     const auto fileContent = jsonToHtml(parsedJson);
     uploadBookmarks(fileContent);
+  }
+
+  void uploadFromFirefox() const
+  {
+    const std::string path = homePath + "/.mozilla/firefox/4ka5c9m2.default-release/places.sqlite";
+    FirefoxParser::parseBookmarks(path);
   }
 
   void downloadCurrentBookmarks()

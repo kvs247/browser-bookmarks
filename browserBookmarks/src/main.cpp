@@ -7,7 +7,7 @@ using json = nlohmann::json;
 
 int main(int argc, char *argv[])
 {
-  Manager worker;
+  Manager manager;
 
   const std::string arg = (argc > 1) ? argv[1] : "--help";
   if (arg == "--help")
@@ -19,15 +19,19 @@ int main(int argc, char *argv[])
   }
   else if (arg == "--brave")
   {
-    worker.uploadFromBrave();
+    manager.uploadFromBrave();
   }
   else if (arg == "--opera")
   {
-    worker.uploadFromOpera();
+    manager.uploadFromOpera();
+  }
+  else if (arg == "--firefox")
+  {
+    manager.uploadFromFirefox();
   }
   else if (arg == "--download")
   {
-    worker.downloadCurrentBookmarks();
+    manager.downloadCurrentBookmarks();
   }
 
   return 0;
