@@ -1,7 +1,10 @@
 #pragma once
 
+#include <map>
+#include <set>
 #include <sqlite3.h>
 #include <types.hpp>
+#include <vector>
 
 class FirefoxParser
 {
@@ -17,102 +20,67 @@ public:
       std::cerr << "Failed to open DB: " << sqlite3_errmsg(db) << std::endl;
     }
 
-    const char *sql = "SELECT b.id, b.title, p.url, b.dateAdded, b.lastModified "
-                      "FROM moz_bookmarks b "
-                      "LEFT JOIN moz_places p ON b.fk = p.id "
-                      "WHERE b.type = 1;";
+    const char *sql = "SELECT * FROM moz_bookmarks b LEFT JOIN moz_places p ON b.fk = p.id;";
 
-    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-    if (rc != SQLITE_OK)
+    sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+
+    BookmarkData parsedJson;
+
+    std::set<int> folderIds;
+    // std::map<int, std::vector<BookmarkItem>> foldersMap;
+    while (sqlite3_step(stmt) == SQLITE_ROW)
     {
-      std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
+
+      const auto id = sqlite3_column_int(stmt, static_cast<int>(MOZ_BOOKMARKS_PLACES_COLUMN::ID));
+      const auto type = sqlite3_column_int(stmt, static_cast<int>(MOZ_BOOKMARKS_PLACES_COLUMN::TYPE));
+      const auto parent = sqlite3_column_int(stmt, static_cast<int>(MOZ_BOOKMARKS_PLACES_COLUMN::PARENT));
+      const auto name = reinterpret_cast<const char *>(
+          sqlite3_column_text(stmt, static_cast<int>(MOZ_BOOKMARKS_PLACES_COLUMN::TITLE)));
+      const auto url = reinterpret_cast<const char *>(
+          sqlite3_column_text(stmt, static_cast<int>(MOZ_BOOKMARKS_PLACES_COLUMN::URL)));
+      const auto addDate = sqlite3_column_int64(stmt, static_cast<int>(MOZ_BOOKMARKS_PLACES_COLUMN::ADD_DATE));
+
+      if (std::string(name) == TOOLBAR)
+      {
+        folderIds.insert(id);
+        // foldersMap[id] = {};
+      }
+
+      if (folderIds.find(parent) != folderIds.cend())
+      {
+        if (type == static_cast<int>(MOZ_BOOKMARKS_TYPE_COLUMN::FOLDER))
+        {
+          folderIds.insert(id);
+        }
+
+        if (type == static_cast<int>(MOZ_BOOKMARKS_TYPE_COLUMN::BOOKMARK))
+        {
+          parsedJson.items.push_back(Bookmark{name, url, addDate});
+        }
+      }
     }
-
-    listTables(db);
-
-    printTable(db, stmt, "moz_bookmarks");
-
-    std::cout << "\n\n";
-
-    printTable(db, stmt, "moz_places", 8);
 
     sqlite3_finalize(stmt);
 
     sqlite3_close(db);
 
-    // parsedJson.print();
-
-    return {};
+    return parsedJson;
   }
 
 private:
-  static void listTables(sqlite3 *db)
+  static constexpr const char *TOOLBAR = "toolbar";
+  enum class MOZ_BOOKMARKS_PLACES_COLUMN
   {
-    const char *sql = "SELECT name FROM sqlite_master WHERE type='table';";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-
-    std::cout << "tables:\n";
-    while (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-      const char *tableName = (const char *)sqlite3_column_text(stmt, 0);
-      std::cout << "  " << tableName << "\n";
-    }
-    std::cout << "\n";
-  }
-
-  static void printTable(sqlite3 *db, sqlite3_stmt *stmt, const std::string &tableName, const int maxW = 13)
+    ID = 0,
+    TYPE = 1,
+    PARENT = 3,
+    TITLE = 5,
+    ADD_DATE = 8,
+    URL = 14,
+  };
+  enum class MOZ_BOOKMARKS_TYPE_COLUMN
   {
-    const std::string sql = "SELECT * FROM " + tableName + ";";
-    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
-
-    // Print column names
-    int cols = sqlite3_column_count(stmt);
-    for (int i = 0; i < cols; i++)
-    {
-      std::cout << std::setw(maxW) << truncate(sqlite3_column_name(stmt, i), maxW) << " | ";
-    }
-    std::cout << "\n" << std::string(cols * 16, '-') << "\n";
-
-    // Print all rows
-    while (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-      for (int i = 0; i < cols; i++)
-      {
-        // Get value based on column type
-        switch (sqlite3_column_type(stmt, i))
-        {
-        case SQLITE_INTEGER:
-          std::cout << std::setw(maxW) << sqlite3_column_int(stmt, i);
-          break;
-        case SQLITE_FLOAT:
-          std::cout << std::setw(maxW) << sqlite3_column_double(stmt, i);
-          break;
-        case SQLITE_TEXT:
-        {
-          std::string text((const char *)sqlite3_column_text(stmt, i));
-          std::cout << std::setw(maxW) << truncate(text, maxW);
-          break;
-        }
-        case SQLITE_NULL:
-          std::cout << std::setw(maxW) << "NULL";
-          break;
-        default:
-          std::cout << std::setw(maxW) << "???";
-        }
-        std::cout << " | ";
-      }
-      std::cout << "\n";
-    }
-  }
-
-  static std::string truncate(const std::string &str, size_t width)
-  {
-    if (str.length() > width)
-    {
-      return str.substr(0, width - 3) + "...";
-    }
-    return str;
-  }
+    BOOKMARK = 1,
+    FOLDER = 2,
+  };
 };

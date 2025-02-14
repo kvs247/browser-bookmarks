@@ -43,7 +43,10 @@ public:
   void uploadFromFirefox() const
   {
     const std::string path = homePath + "/.mozilla/firefox/4ka5c9m2.default-release/places.sqlite";
-    FirefoxParser::parseBookmarks(path);
+    const auto parsedJson = FirefoxParser::parseBookmarks(path);
+
+    const auto fileContent = jsonToHtml(parsedJson);
+    std::cout << "\nRESULT:\n" << fileContent << "\n";
   }
 
   void downloadCurrentBookmarks()
