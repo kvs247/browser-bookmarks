@@ -2,6 +2,7 @@
 #include <Formatter.hpp>
 #include <Manager.hpp>
 #include <Parser.hpp>
+#include <filesystem>
 #include <fstream>
 
 #include "paths.h"
@@ -16,22 +17,9 @@ Manager::~Manager() { Aws::ShutdownAPI(sdkOptions); }
 
 void Manager::uploadFromBrowser(BrowserType browserType) const
 {
-  std::string path;
-  switch (browserType)
-  {
-  case BrowserType::Brave:
-    path = homePath + BRAVE_BOOKMARKS_PATH;
-    break;
-  case BrowserType::Opera:
-    path = homePath + OPERA_BOOKMARKS_PATH;
-    break;
-  case BrowserType::Firefox:
-    path = homePath + "/.mozilla/firefox/4ka5c9m2.default-release/places.sqlite";
-    break;
-  }
-
+  const auto bookmarksFilePath = getBrowserBookmarksFilePath(browserType);
   auto parser = Parser::createParser(browserType);
-  const auto parsedJson = parser->parseBookmarks(path);
+  const auto parsedJson = parser->parseBookmarks(bookmarksFilePath);
   const auto fileContent = jsonToHtml(parsedJson);
   uploadBookmarks(fileContent);
 }
@@ -62,4 +50,52 @@ std::string Manager::jsonToHtml(const BookmarkData &json) const
 {
   Formatter formatter(json);
   return formatter.getHtml();
+}
+
+std::string Manager::getBrowserBookmarksFilePath(BrowserType browserType) const
+{
+  std::string pathSuffix;
+  std::string bookmarksFileName;
+  switch (browserType)
+  {
+  case BrowserType::Brave:
+    pathSuffix = BRAVE_DIR_PATH;
+    bookmarksFileName = CHROMIUM_BOOKMARKS_FILENAME;
+    break;
+  case BrowserType::Opera:
+    pathSuffix = OPERA_DIR_PATH;
+    bookmarksFileName = CHROMIUM_BOOKMARKS_FILENAME;
+    break;
+  case BrowserType::Firefox:
+    pathSuffix = FIREFOX_DIR_PATH;
+    bookmarksFileName = FIREFOX_BOOKMARKS_FILENAME;
+    break;
+  }
+
+  std::vector<std::string> matches;
+  for (const auto &dirEntry : std::filesystem::recursive_directory_iterator(homePath + pathSuffix))
+  {
+    if (dirEntry.path().string().ends_with(bookmarksFileName)) // ends_with() from C++ 20
+    {
+      matches.emplace_back(dirEntry.path().string());
+    }
+  }
+
+  if (matches.size() == 0)
+  {
+    throw std::runtime_error("error: bookmarks file not found");
+  }
+
+  const auto res = matches[0];
+
+  if (matches.size() > 1)
+  {
+    std::cout << "Warning: found multiple paths to bookmarks file. Using " << res << "\n";
+  }
+  else
+  {
+    std::cout << "reading bookmarks from " << res << "\n";
+  }
+
+  return res;
 }

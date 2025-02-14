@@ -24,4 +24,5 @@ private:
 
   void uploadBookmarks(const std::string &fileContent) const;
   std::string jsonToHtml(const BookmarkData &json) const;
+  std::string getBrowserBookmarksFilePath(BrowserType browserType) const;
 };

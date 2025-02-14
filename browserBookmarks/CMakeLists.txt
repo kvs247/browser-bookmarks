@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(browserBookmarks)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wall -Wextra)
 
@@ -9,8 +11,11 @@ find_package(AWSSDK REQUIRED COMPONENTS s3)
 find_package(SQLite3 REQUIRED)
 
 get_filename_component(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
-set(BRAVE_BOOKMARKS_PATH "/.config/BraveSoftware/Brave-Browser/Default/Bookmarks")
-set(OPERA_BOOKMARKS_PATH "/.config/opera/Default/Bookmarks")
+set(CHROMIUM_BOOKMARKS_FILENAME "Bookmarks")
+set(BRAVE_DIR_PATH "/.config/BraveSoftware")
+set(OPERA_DIR_PATH "/.config/opera")
+set(FIREFOX_BOOKMARKS_FILENAME "places.sqlite")
+set(FIREFOX_DIR_PATH "/.mozilla/firefox")
 configure_file(
     "${PROJECT_ROOT_DIR}/cmake/paths.h.in"
     "${CMAKE_BINARY_DIR}/generated/paths.h"
