@@ -1,15 +1,17 @@
 #pragma once
 
-#include "AwsS3.hpp"
-#include "ChromiumParser.hpp"
-#include "FirefoxParser.hpp"
-#include "Formatter.hpp"
-#include "paths.h"
+#include <ChromiumParser.hpp>
+#include <FirefoxParser.hpp>
 #include <aws/core/Aws.h>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <types.hpp>
+
+#include "AwsS3.hpp"
+#include "Formatter.hpp"
+#include "paths.h"
 
 class Manager
 {

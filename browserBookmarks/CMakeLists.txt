@@ -18,6 +18,8 @@ configure_file(
 
 set(SOURCES
     src/main.cpp
+    src/Parser/ChromiumParser.cpp
+    src/Parser/FirefoxParser.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -25,6 +27,8 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME}
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Parser
     ${CMAKE_BINARY_DIR}/generated
     ${CURL_INCLUDE_DIRS}
 )
