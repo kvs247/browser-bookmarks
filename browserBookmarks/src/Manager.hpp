@@ -46,7 +46,7 @@ public:
     const auto parsedJson = FirefoxParser::parseBookmarks(path);
 
     const auto fileContent = jsonToHtml(parsedJson);
-    std::cout << "\nRESULT:\n" << fileContent << "\n";
+    uploadBookmarks(fileContent);
   }
 
   void downloadCurrentBookmarks()

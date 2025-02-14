@@ -21,6 +21,7 @@ struct BookmarkFolder
 {
   std::string name;
   std::vector<BookmarkItem> items;
+  int id = -1;
 };
 
 struct BookmarkData
