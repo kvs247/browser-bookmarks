@@ -8,6 +8,7 @@ using json = nlohmann::json;
 int main(int argc, char *argv[])
 {
   Manager manager;
+  BrowserType browserType;
 
   const std::string arg = (argc > 1) ? argv[1] : "--help";
   if (arg == "--help")
@@ -17,22 +18,26 @@ int main(int argc, char *argv[])
 
     return 0;
   }
-  else if (arg == "--brave")
-  {
-    manager.uploadFromBrave();
-  }
-  else if (arg == "--opera")
-  {
-    manager.uploadFromOpera();
-  }
-  else if (arg == "--firefox")
-  {
-    manager.uploadFromFirefox();
-  }
   else if (arg == "--download")
   {
     manager.downloadCurrentBookmarks();
+
+    return 0;
   }
+  else if (arg == "--brave")
+  {
+    browserType = BrowserType::Brave;
+  }
+  else if (arg == "--opera")
+  {
+    browserType = BrowserType::Opera;
+  }
+  else if (arg == "--firefox")
+  {
+    browserType = BrowserType::Firefox;
+  }
+
+  manager.uploadFromBrowser(browserType);
 
   return 0;
 }

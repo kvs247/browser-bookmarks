@@ -5,7 +5,7 @@
 
 using json = nlohmann::json;
 
-BookmarkData ChromiumParser::parseBookmarks(const std::string &path)
+BookmarkData ChromiumParser::parseBookmarks(const std::string &path) const
 {
   std::ifstream f(path);
   if (!f.is_open())

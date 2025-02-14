@@ -18,6 +18,7 @@ configure_file(
 
 set(SOURCES
     src/main.cpp
+    src/Parser/Parser.cpp
     src/Parser/ChromiumParser.cpp
     src/Parser/FirefoxParser.cpp
 )

@@ -5,10 +5,12 @@
 #include <string>
 #include <types.hpp>
 
-class FirefoxParser
+#include "Parser.hpp"
+
+class FirefoxParser : public Parser
 {
 public:
-  static BookmarkData parseBookmarks(const std::string &path);
+  BookmarkData parseBookmarks(const std::string &path) const override;
 
 private:
   using FoldersMap = std::map<int, std::vector<BookmarkItem>>;

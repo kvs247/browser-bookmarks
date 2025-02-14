@@ -5,7 +5,7 @@
 #include <variant>
 #include <vector>
 
-BookmarkData FirefoxParser::parseBookmarks(const std::string &path)
+BookmarkData FirefoxParser::parseBookmarks(const std::string &path) const
 {
   sqlite3 *db = openDatabase(path);
 

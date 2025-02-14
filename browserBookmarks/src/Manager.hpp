@@ -1,7 +1,6 @@
 #pragma once
 
-#include <ChromiumParser.hpp>
-#include <FirefoxParser.hpp>
+#include <Parser.hpp>
 #include <aws/core/Aws.h>
 #include <fstream>
 #include <iostream>
@@ -24,29 +23,24 @@ public:
 
   ~Manager() { Aws::ShutdownAPI(sdkOptions); }
 
-  void uploadFromBrave() const
+  void uploadFromBrowser(BrowserType browserType) const
   {
-    const std::string path = homePath + BRAVE_BOOKMARKS_PATH;
-    const auto parsedJson = ChromiumParser::parseBookmarks(path);
+    std::string path;
+    switch (browserType)
+    {
+    case BrowserType::Brave:
+      path = homePath + BRAVE_BOOKMARKS_PATH;
+      break;
+    case BrowserType::Opera:
+      path = homePath + OPERA_BOOKMARKS_PATH;
+      break;
+    case BrowserType::Firefox:
+      path = homePath + "/.mozilla/firefox/4ka5c9m2.default-release/places.sqlite";
+      break;
+    }
 
-    const auto fileContent = jsonToHtml(parsedJson);
-    uploadBookmarks(fileContent);
-  }
-
-  void uploadFromOpera() const
-  {
-    const std::string path = homePath + OPERA_BOOKMARKS_PATH;
-    const auto parsedJson = ChromiumParser::parseBookmarks(path);
-
-    const auto fileContent = jsonToHtml(parsedJson);
-    uploadBookmarks(fileContent);
-  }
-
-  void uploadFromFirefox() const
-  {
-    const std::string path = homePath + "/.mozilla/firefox/4ka5c9m2.default-release/places.sqlite";
-    const auto parsedJson = FirefoxParser::parseBookmarks(path);
-
+    auto parser = Parser::createParser(browserType);
+    const auto parsedJson = parser->parseBookmarks(path);
     const auto fileContent = jsonToHtml(parsedJson);
     uploadBookmarks(fileContent);
   }

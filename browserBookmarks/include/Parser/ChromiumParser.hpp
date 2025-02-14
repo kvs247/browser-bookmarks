@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Parser.hpp"
 #include <nlohmann/json.hpp>
 #include <string>
 #include <types.hpp>
@@ -7,10 +8,10 @@
 
 using json = nlohmann::json;
 
-class ChromiumParser
+class ChromiumParser : public Parser
 {
 public:
-  static BookmarkData parseBookmarks(const std::string &path);
+  BookmarkData parseBookmarks(const std::string &path) const override;
 
 private:
   static std::vector<BookmarkItem> addBookmarkItems(json data);

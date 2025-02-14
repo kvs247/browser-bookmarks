@@ -49,3 +49,10 @@ struct BookmarkData
     std::cout << "\n\n";
   }
 };
+
+enum class BrowserType
+{
+  Brave,
+  Opera,
+  Firefox,
+};
