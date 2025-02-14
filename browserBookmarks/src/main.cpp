@@ -1,9 +1,6 @@
+#include <Manager.hpp>
 #include <iostream>
 #include <string>
-
-#include "Manager.hpp"
-
-using json = nlohmann::json;
 
 int main(int argc, char *argv[])
 {

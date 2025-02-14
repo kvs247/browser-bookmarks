@@ -21,6 +21,9 @@ set(SOURCES
     src/Parser/Parser.cpp
     src/Parser/ChromiumParser.cpp
     src/Parser/FirefoxParser.cpp
+    src/AwsS3.cpp
+    src/Formatter.cpp
+    src/Manager.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
