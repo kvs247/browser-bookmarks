@@ -4,7 +4,12 @@ project(browser-bookmarks)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-add_compile_options(-Wall -Wextra)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Window")
+    add_compile_options(-municode)
+else()
+    add_compile_options(-Wall -Wextra)
+endif()
 
 find_package(nlohmann_json REQUIRED)
 find_package(AWSSDK REQUIRED COMPONENTS s3)
